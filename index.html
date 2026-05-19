@@ -1,0 +1,604 @@
+<!doctype html>
+<html lang="id" class="h-full">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistem Laundry Kiloan</title>
+  <script src="/_sdk/element_sdk.js"></script>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
+
+    html, body {
+      height: 100%;
+      width: 100%;
+      margin: 0;
+      padding: 0;
+    }
+
+    .app-shell {
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background: #f0f4f8;
+      color: #1a202c;
+      font-family: "Poppins", sans-serif;
+    }
+
+    .glass-header {
+      backdrop-filter: blur(20px);
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.95), rgba(37, 99, 235, 0.95));
+      box-shadow: 0 8px 32px rgba(37, 99, 235, 0.15);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .form-card {
+      background: linear-gradient(135deg, rgba(255,255,255,0.98), rgba(239,246,255,0.95));
+      box-shadow: 0 16px 48px rgba(37, 99, 235, 0.08);
+      border: 1px solid rgba(59, 130, 246, 0.1);
+      transition: transform 220ms ease, box-shadow 220ms ease;
+    }
+
+    .form-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 24px 64px rgba(37, 99, 235, 0.12);
+    }
+
+    .input-field {
+      background: rgba(255, 255, 255, 0.8);
+      border: 2px solid rgba(59, 130, 246, 0.2);
+      transition: all 200ms ease;
+    }
+
+    .input-field:focus {
+      background: white;
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+      outline: none;
+    }
+
+    .submit-btn {
+      background: linear-gradient(135deg, #3b82f6, #2563eb);
+      transition: all 220ms ease;
+      box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3);
+    }
+
+    .submit-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 32px rgba(37, 99, 235, 0.4);
+    }
+
+    .submit-btn:active {
+      transform: translateY(0);
+    }
+
+    .table-container {
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 12px 40px rgba(37, 99, 235, 0.08);
+      border: 1px solid rgba(59, 130, 246, 0.1);
+      overflow: hidden;
+    }
+
+    .table-header {
+      background: linear-gradient(135deg, #3b82f6, #2563eb);
+      color: white;
+    }
+
+    .table-header th {
+      padding: 16px 12px;
+      font-weight: 600;
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .table-body td {
+      padding: 14px 12px;
+      border-bottom: 1px solid rgba(59, 130, 246, 0.05);
+      font-size: 14px;
+    }
+
+    .table-body tr:hover {
+      background: rgba(59, 130, 246, 0.02);
+    }
+
+    .status-proses {
+      background: rgba(34, 197, 94, 0.1);
+      color: #15803d;
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 12px;
+    }
+
+    .status-selesai {
+      background: rgba(59, 130, 246, 0.1);
+      color: #1e40af;
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 12px;
+    }
+
+    .btn-edit {
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 12px;
+      transition: all 180ms ease;
+    }
+
+    .btn-edit:hover {
+      transform: scale(1.05);
+      box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+    }
+
+    .btn-delete {
+      background: linear-gradient(135deg, #ef4444, #dc2626);
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 12px;
+      transition: all 180ms ease;
+    }
+
+    .btn-delete:hover {
+      transform: scale(1.05);
+      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+    }
+
+    .fade-up {
+      animation: fadeUp 600ms ease both;
+    }
+
+    .delay-1 { animation-delay: 100ms; }
+    .delay-2 { animation-delay: 200ms; }
+
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: #6b7280;
+    }
+
+    .empty-state i {
+      font-size: 48px;
+      opacity: 0.3;
+      margin-bottom: 16px;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .fade-up, .form-card, .submit-btn, .btn-edit, .btn-delete {
+        animation: none;
+        transition: none;
+      }
+    }
+  </style>
+  <script src="/_sdk/data_sdk.js"></script>
+  <style>body { box-sizing: border-box; }</style>
+ </head>
+ <body class="h-full">
+  <div id="app" class="app-shell">
+   <header class="glass-header sticky top-0 z-20">
+    <div class="mx-auto max-w-5xl px-6 py-6 md:py-8">
+     <div class="flex items-center gap-3">
+      <div class="flex items-center justify-center w-12 h-12 bg-white/20 rounded-full"><i data-lucide="droplets" class="w-6 h-6 text-white"></i>
+      </div>
+      <div>
+       <h1 id="appTitle" class="text-white font-bold text-2xl md:text-3xl">Sistem Laundry Kiloan</h1>
+       <p id="appSubtitle" class="text-white/80 text-sm md:text-base font-medium">Kelola pesanan laundry dengan mudah</p>
+      </div>
+     </div>
+    </div>
+   </header>
+   <main class="mx-auto max-w-5xl px-6 py-8"><!-- Form Section -->
+    <section class="fade-up delay-1 mb-8">
+     <div class="form-card rounded-2xl p-8">
+      <div class="mb-6">
+       <h2 class="text-xl font-bold text-blue-900 flex items-center gap-2"><i data-lucide="plus-circle" class="w-6 h-6"></i> Tambah Pesanan Baru</h2>
+      </div>
+      <form id="laundryForm" class="grid grid-cols-1 md:grid-cols-2 gap-6"><input type="hidden" id="index" value="">
+       <div class="md:col-span-1"><label for="nama" class="block text-sm font-semibold text-blue-900 mb-2"> <span id="labelNama">Nama Pelanggan</span> <span class="text-red-500">*</span> </label> <input type="text" id="nama" class="input-field w-full px-4 py-3 rounded-lg" placeholder="Masukkan nama pelanggan" required>
+       </div>
+       <div class="md:col-span-1"><label for="berat" class="block text-sm font-semibold text-blue-900 mb-2"> <span id="labelBerat">Berat (kg)</span> <span class="text-red-500">*</span> </label> <input type="number" id="berat" class="input-field w-full px-4 py-3 rounded-lg" min="0.1" step="0.1" placeholder="Contoh: 2.5" required>
+       </div>
+       <div class="md:col-span-1"><label for="tanggal" class="block text-sm font-semibold text-blue-900 mb-2"> <span id="labelTanggal">Tanggal Masuk</span> <span class="text-red-500">*</span> </label> <input type="date" id="tanggal" class="input-field w-full px-4 py-3 rounded-lg" required>
+       </div>
+       <div class="md:col-span-1"><label for="status" class="block text-sm font-semibold text-blue-900 mb-2"> <span id="labelStatus">Status</span> <span class="text-red-500">*</span> </label> <select id="status" class="input-field w-full px-4 py-3 rounded-lg" required> <option value="">-- Pilih Status --</option> <option value="Proses">Proses</option> <option value="Selesai">Selesai</option> </select>
+       </div>
+       <div class="md:col-span-2"><button type="submit" class="submit-btn w-full text-white font-bold py-3 rounded-lg flex items-center justify-center gap-2 hover:opacity-90"> <i data-lucide="check-circle" class="w-5 h-5"></i> <span id="btnSubmitText">Simpan</span> </button>
+       </div>
+      </form>
+     </div>
+    </section><!-- Table Section -->
+    <section class="fade-up delay-2">
+     <div class="mb-6">
+      <h2 class="text-xl font-bold text-blue-900 flex items-center gap-2 mb-4"><i data-lucide="table-2" class="w-6 h-6"></i> Daftar Pesanan</h2>
+     </div>
+     <div class="table-container overflow-x-auto">
+      <table class="w-full">
+       <thead class="table-header">
+        <tr>
+         <th id="colNo">No</th>
+         <th id="colNama">Nama</th>
+         <th id="colBerat">Berat (kg)</th>
+         <th id="colTanggal">Tanggal Masuk</th>
+         <th id="colStatus">Status</th>
+         <th id="colHarga">Harga</th>
+         <th id="colAksi">Aksi</th>
+        </tr>
+       </thead>
+       <tbody id="laundryTable" class="table-body"><!-- Data akan muncul di sini -->
+       </tbody>
+      </table>
+      <div id="emptyState" class="empty-state hidden"><i data-lucide="inbox" class="inline-block"></i>
+       <p id="emptyMessage" class="text-gray-600 font-medium">Tidak ada pesanan saat ini</p>
+      </div>
+     </div>
+    </section><!-- Summary Section -->
+    <section class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
+     <div class="form-card rounded-2xl p-6">
+      <div class="flex items-center justify-between">
+       <div>
+        <p class="text-blue-900 text-sm font-semibold opacity-75">Total Pesanan</p>
+        <p id="totalOrders" class="text-3xl font-bold text-blue-600 mt-2">0</p>
+       </div><i data-lucide="shopping-bag" class="w-12 h-12 text-blue-200"></i>
+      </div>
+     </div>
+     <div class="form-card rounded-2xl p-6">
+      <div class="flex items-center justify-between">
+       <div>
+        <p class="text-blue-900 text-sm font-semibold opacity-75">Sedang Proses</p>
+        <p id="processingOrders" class="text-3xl font-bold text-green-600 mt-2">0</p>
+       </div><i data-lucide="clock" class="w-12 h-12 text-green-200"></i>
+      </div>
+     </div>
+     <div class="form-card rounded-2xl p-6">
+      <div class="flex items-center justify-between">
+       <div>
+        <p class="text-blue-900 text-sm font-semibold opacity-75">Total Pendapatan</p>
+        <p id="totalRevenue" class="text-3xl font-bold text-blue-600 mt-2">Rp 0</p>
+       </div><i data-lucide="dollar-sign" class="w-12 h-12 text-blue-200"></i>
+      </div>
+     </div>
+    </section>
+   </main>
+   <footer class="border-t border-blue-200 bg-white/50 px-6 py-4 text-center mt-12">
+    <p class="text-sm opacity-60 font-medium">© 2024 Sistem Laundry Kiloan. Data tersimpan di Canva Sheet.</p>
+   </footer>
+  </div>
+  <script>
+    const TARIF_KILOAN = 5000; // Rp 5000 per kg
+    let allLaundryData = [];
+
+    const defaultConfig = {
+      background_color: "#f0f4f8",
+      surface_color: "#ffffff",
+      text_color: "#1a202c",
+      primary_color: "#3b82f6",
+      secondary_color: "#2563eb",
+      font_family: "Poppins",
+      font_size: 16,
+      app_title: "Sistem Laundry Kiloan",
+      app_subtitle: "Kelola pesanan laundry dengan mudah",
+      label_customer_name: "Nama Pelanggan",
+      label_weight: "Berat (kg)",
+      label_date: "Tanggal Masuk",
+      label_status: "Status",
+      button_submit: "Simpan",
+      table_header_no: "No",
+      table_header_name: "Nama",
+      table_header_weight: "Berat (kg)",
+      table_header_date: "Tanggal Masuk",
+      table_header_status: "Status",
+      table_header_action: "Aksi",
+      table_header_price: "Harga",
+      empty_message: "Tidak ada pesanan saat ini"
+    };
+
+    function valueFrom(config, key) {
+      return config[key] || defaultConfig[key];
+    }
+
+    async function onConfigChange(config) {
+      const primaryColor = valueFrom(config, "primary_color");
+      const bgColor = valueFrom(config, "background_color");
+      const textColor = valueFrom(config, "text_color");
+      const fontFamily = valueFrom(config, "font_family");
+      const baseSize = Number(valueFrom(config, "font_size")) || 16;
+      const fontStack = `${fontFamily}, "Poppins", sans-serif`;
+
+      const app = document.getElementById("app");
+      app.style.backgroundColor = bgColor;
+      app.style.color = textColor;
+      app.style.fontFamily = fontStack;
+
+      // Update text content
+      document.getElementById("appTitle").textContent = valueFrom(config, "app_title");
+      document.getElementById("appSubtitle").textContent = valueFrom(config, "app_subtitle");
+      document.getElementById("labelNama").textContent = valueFrom(config, "label_customer_name");
+      document.getElementById("labelBerat").textContent = valueFrom(config, "label_weight");
+      document.getElementById("labelTanggal").textContent = valueFrom(config, "label_date");
+      document.getElementById("labelStatus").textContent = valueFrom(config, "label_status");
+      document.getElementById("btnSubmitText").textContent = valueFrom(config, "button_submit");
+      document.getElementById("colNo").textContent = valueFrom(config, "table_header_no");
+      document.getElementById("colNama").textContent = valueFrom(config, "table_header_name");
+      document.getElementById("colBerat").textContent = valueFrom(config, "table_header_weight");
+      document.getElementById("colTanggal").textContent = valueFrom(config, "table_header_date");
+      document.getElementById("colStatus").textContent = valueFrom(config, "table_header_status");
+      document.getElementById("colHarga").textContent = valueFrom(config, "table_header_price");
+      document.getElementById("colAksi").textContent = valueFrom(config, "table_header_action");
+      document.getElementById("emptyMessage").textContent = valueFrom(config, "empty_message");
+
+      // Update font sizes
+      document.querySelectorAll("h1, h2").forEach((el) => {
+        el.style.fontFamily = fontStack;
+        el.style.fontSize = `${baseSize * 1.5}px`;
+      });
+
+      document.querySelectorAll("p, label, td, th").forEach((el) => {
+        el.style.fontFamily = fontStack;
+        if (!el.classList.contains("text-3xl")) {
+          el.style.fontSize = `${baseSize}px`;
+        }
+      });
+    }
+
+    // Initialize Element SDK
+    if (window.elementSdk) {
+      window.elementSdk.init({
+        defaultConfig,
+        onConfigChange,
+        mapToCapabilities: (config) => ({
+          recolorables: [
+            {
+              get: () => config.background_color || defaultConfig.background_color,
+              set: (value) => {
+                config.background_color = value;
+                window.elementSdk.setConfig({ background_color: value });
+              }
+            },
+            {
+              get: () => config.surface_color || defaultConfig.surface_color,
+              set: (value) => {
+                config.surface_color = value;
+                window.elementSdk.setConfig({ surface_color: value });
+              }
+            },
+            {
+              get: () => config.text_color || defaultConfig.text_color,
+              set: (value) => {
+                config.text_color = value;
+                window.elementSdk.setConfig({ text_color: value });
+              }
+            },
+            {
+              get: () => config.primary_color || defaultConfig.primary_color,
+              set: (value) => {
+                config.primary_color = value;
+                window.elementSdk.setConfig({ primary_color: value });
+              }
+            },
+            {
+              get: () => config.secondary_color || defaultConfig.secondary_color,
+              set: (value) => {
+                config.secondary_color = value;
+                window.elementSdk.setConfig({ secondary_color: value });
+              }
+            }
+          ],
+          borderables: [],
+          fontEditable: {
+            get: () => config.font_family || defaultConfig.font_family,
+            set: (value) => {
+              config.font_family = value;
+              window.elementSdk.setConfig({ font_family: value });
+            }
+          },
+          fontSizeable: {
+            get: () => config.font_size || defaultConfig.font_size,
+            set: (value) => {
+              config.font_size = value;
+              window.elementSdk.setConfig({ font_size: value });
+            }
+          }
+        }),
+        mapToEditPanelValues: (config) => new Map([
+          ["app_title", config.app_title || defaultConfig.app_title],
+          ["app_subtitle", config.app_subtitle || defaultConfig.app_subtitle],
+          ["label_customer_name", config.label_customer_name || defaultConfig.label_customer_name],
+          ["label_weight", config.label_weight || defaultConfig.label_weight],
+          ["label_date", config.label_date || defaultConfig.label_date],
+          ["label_status", config.label_status || defaultConfig.label_status],
+          ["button_submit", config.button_submit || defaultConfig.button_submit],
+          ["table_header_no", config.table_header_no || defaultConfig.table_header_no],
+          ["table_header_name", config.table_header_name || defaultConfig.table_header_name],
+          ["table_header_weight", config.table_header_weight || defaultConfig.table_header_weight],
+          ["table_header_date", config.table_header_date || defaultConfig.table_header_date],
+          ["table_header_status", config.table_header_status || defaultConfig.table_header_status],
+          ["table_header_price", config.table_header_price || defaultConfig.table_header_price],
+          ["empty_message", config.empty_message || defaultConfig.empty_message]
+        ])
+      });
+    } else {
+      onConfigChange(defaultConfig);
+    }
+
+    // Initialize Data SDK
+    const dataHandler = {
+      onDataChanged(data) {
+        allLaundryData = data;
+        renderTable();
+        updateSummary();
+      }
+    };
+
+    async function initializeDataSDK() {
+      if (!window.dataSdk) return;
+      const result = await window.dataSdk.init(dataHandler);
+      if (!result.isOk) {
+        console.error("Failed to initialize Data SDK");
+      }
+    }
+
+    // Form handling
+    const form = document.getElementById('laundryForm');
+    const indexInput = document.getElementById('index');
+    let isSubmitting = false;
+
+    form.addEventListener('submit', async function(e) {
+      e.preventDefault();
+
+      if (isSubmitting) return;
+      isSubmitting = true;
+
+      const nama = document.getElementById('nama').value.trim();
+      const berat = parseFloat(document.getElementById('berat').value);
+      const tanggal = document.getElementById('tanggal').value;
+      const status = document.getElementById('status').value;
+
+      if (!nama || !berat || !tanggal || !status) {
+        isSubmitting = false;
+        return;
+      }
+
+      const index = indexInput.value;
+
+      try {
+        if (index === '') {
+          // Add new
+          const result = await window.dataSdk.create({
+            nama,
+            berat: berat.toString(),
+            tanggal,
+            status
+          });
+
+          if (!result.isOk) {
+            console.error("Failed to create:", result.error);
+          }
+        } else {
+          // Update existing
+          const existing = allLaundryData[parseInt(index)];
+          const result = await window.dataSdk.update({
+            ...existing,
+            nama,
+            berat: berat.toString(),
+            tanggal,
+            status
+          });
+
+          if (!result.isOk) {
+            console.error("Failed to update:", result.error);
+          }
+
+          indexInput.value = '';
+        }
+
+        form.reset();
+      } finally {
+        isSubmitting = false;
+      }
+    });
+
+    function renderTable() {
+      const tbody = document.getElementById('laundryTable');
+      const emptyState = document.getElementById('emptyState');
+
+      if (allLaundryData.length === 0) {
+        tbody.innerHTML = '';
+        emptyState.classList.remove('hidden');
+        return;
+      }
+
+      emptyState.classList.add('hidden');
+      tbody.innerHTML = '';
+
+      allLaundryData.forEach((item, idx) => {
+        const harga = Math.round(parseFloat(item.berat) * TARIF_KILOAN);
+        const statusClass = item.status === 'Proses' ? 'status-proses' : 'status-selesai';
+
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${idx + 1}</td>
+          <td>${item.nama}</td>
+          <td>${parseFloat(item.berat).toFixed(1)}</td>
+          <td>${new Date(item.tanggal).toLocaleDateString('id-ID')}</td>
+          <td><span class="${statusClass}">${item.status}</span></td>
+          <td>Rp ${harga.toLocaleString('id-ID')}</td>
+          <td>
+            <button class="btn-edit" onclick="editData(${idx})"><i data-lucide="edit-2" class="inline w-3 h-3"></i></button>
+            <button class="btn-delete" onclick="deleteData(${idx})"><i data-lucide="trash-2" class="inline w-3 h-3"></i></button>
+          </td>
+        `;
+        tbody.appendChild(row);
+      });
+
+      if (window.lucide) {
+        lucide.createIcons();
+      }
+    }
+
+    function editData(idx) {
+      const item = allLaundryData[idx];
+      document.getElementById('nama').value = item.nama;
+      document.getElementById('berat').value = item.berat;
+      document.getElementById('tanggal').value = item.tanggal;
+      document.getElementById('status').value = item.status;
+      indexInput.value = idx;
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    async function deleteData(idx) {
+      if (!confirm('Yakin ingin menghapus data ini?')) return;
+
+      const item = allLaundryData[idx];
+      const result = await window.dataSdk.delete(item);
+
+      if (!result.isOk) {
+        console.error("Failed to delete:", result.error);
+      }
+    }
+
+    function updateSummary() {
+      const total = allLaundryData.length;
+      const processing = allLaundryData.filter(item => item.status === 'Proses').length;
+      const revenue = allLaundryData.reduce((sum, item) => {
+        return sum + (parseFloat(item.berat) * TARIF_KILOAN);
+      }, 0);
+
+      document.getElementById('totalOrders').textContent = total;
+      document.getElementById('processingOrders').textContent = processing;
+      document.getElementById('totalRevenue').textContent = 'Rp ' + Math.round(revenue).toLocaleString('id-ID');
+    }
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+      initializeDataSDK();
+      if (window.lucide) {
+        lucide.createIcons();
+      }
+      onConfigChange(defaultConfig);
+    });
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9fe1677d50f36038',t:'MTc3OTE3NTkxMC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
